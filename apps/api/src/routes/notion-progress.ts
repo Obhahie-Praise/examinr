@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-type NotionProgressBindings = {
+export type NotionProgressBindings = {
   DB: D1Database;
   NOTION_API_KEY?: string;
   NOTION_PROGRESS_DATA_SOURCE_ID?: string;
@@ -41,8 +41,8 @@ const updateTypes: UpdateType[] = [
   "Other",
 ];
 
-const notionVersion = "2026-03-11";
-const notionPagesUrl = "https://api.notion.com/v1/pages";
+const notionVersion = "2025-09-03";
+const notionApiUrl = "https://api.notion.com/v1";
 
 const notionProgress = new Hono<{ Bindings: NotionProgressBindings }>();
 
@@ -146,6 +146,49 @@ function richText(value: string) {
   };
 }
 
+function notionHeaders(apiKey: string): HeadersInit {
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    "Notion-Version": notionVersion,
+    "Content-Type": "application/json",
+  };
+}
+
+async function findExistingNotionEvent(
+  apiKey: string,
+  dataSourceId: string,
+  eventId: string,
+): Promise<string | null> {
+  const response = await fetch(
+    `${notionApiUrl}/data_sources/${dataSourceId}/query`,
+    {
+      method: "POST",
+      headers: notionHeaders(apiKey),
+      body: JSON.stringify({
+        filter: {
+          property: "External event ID",
+          rich_text: { equals: eventId },
+        },
+        page_size: 1,
+      }),
+    },
+  );
+
+  const payload: unknown = await response.json();
+  if (
+    !response.ok ||
+    !isRecord(payload) ||
+    !Array.isArray(payload.results)
+  ) {
+    throw new Error(`Notion idempotency lookup failed (HTTP ${response.status}).`);
+  }
+
+  const existing = payload.results[0];
+  return isRecord(existing) && typeof existing.id === "string"
+    ? existing.id
+    : null;
+}
+
 notionProgress.post("/", async (c) => {
   const expectedSecret = c.env.EXAMINR_NOTION_SYNC_SECRET;
   const authorization = c.req.header("Authorization") ?? "";
@@ -219,6 +262,29 @@ notionProgress.post("/", async (c) => {
       }
     }
 
+    // Recover if Notion accepted the previous write but the API timed out before
+    // persisting the resulting Notion page ID in D1.
+    const existingNotionPageId = await findExistingNotionEvent(
+      c.env.NOTION_API_KEY,
+      c.env.NOTION_PROGRESS_DATA_SOURCE_ID,
+      event.eventId,
+    );
+
+    if (existingNotionPageId) {
+      await c.env.DB.prepare(
+        `UPDATE notion_progress_events
+         SET status = 'sent', notion_page_id = ?, last_error = NULL, updated_at = CURRENT_TIMESTAMP
+         WHERE event_id = ?`,
+      )
+        .bind(existingNotionPageId, event.eventId)
+        .run();
+
+      return c.json(
+        { status: "duplicate", notionPageId: existingNotionPageId },
+        200,
+      );
+    }
+
     const properties = {
       Update: {
         title: [{ type: "text", text: { content: event.title } }],
@@ -245,13 +311,9 @@ notionProgress.post("/", async (c) => {
       "External event ID": richText(event.eventId),
     };
 
-    const notionResponse = await fetch(notionPagesUrl, {
+    const notionResponse = await fetch(`${notionApiUrl}/pages`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${c.env.NOTION_API_KEY}`,
-        "Notion-Version": notionVersion,
-        "Content-Type": "application/json",
-      },
+      headers: notionHeaders(c.env.NOTION_API_KEY),
       body: JSON.stringify({
         parent: { data_source_id: c.env.NOTION_PROGRESS_DATA_SOURCE_ID },
         properties,
