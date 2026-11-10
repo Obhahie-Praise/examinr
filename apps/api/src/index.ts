@@ -5,13 +5,15 @@ import { createAuth, type AuthEnvironment } from "./auth/auth";
 import { health } from "./routes/health";
 import { me } from "./routes/me";
 import { notionProgress, type NotionProgressBindings } from "./routes/notion-progress";
+import { notionStudyProgress, type NotionStudyBindings } from "./routes/notion-study-progress";
 
 /**
  * Full set of environment bindings available to this Worker.
  * DB is the Cloudflare D1 binding (binding name must match wrangler.jsonc).
  */
 type Bindings = AuthEnvironment &
-  NotionProgressBindings & {
+  NotionProgressBindings &
+  NotionStudyBindings & {
     GEMINI_API_KEY?: string;
     UPLOADTHING_TOKEN?: string;
   };
@@ -70,5 +72,6 @@ app.route("/api/me", me);
 // Server-to-server integrations
 // ---------------------------------------------------------------------------
 app.route("/api/integrations/notion/progress", notionProgress);
+app.route("/api/integrations/notion/study-progress", notionStudyProgress);
 
 export default app;
