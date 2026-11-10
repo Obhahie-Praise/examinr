@@ -6,10 +6,10 @@ Update this document as milestones are completed. Detailed implementation tasks 
 
 ## 1. Project Foundation
 
-- [ ] Monorepo and development environment established
-- [ ] Shared packages and configurations established
-- [ ] Database and API foundations established
-- [ ] Authentication and authorisation implemented
+- [x] Monorepo and development environment established
+- [x] Shared packages and configurations established
+- [x] Database and API foundations established — Hono on Cloudflare Workers, D1 connected, Drizzle ORM initialised, Better Auth tables migrated to local D1, health endpoints operational, Gemini and UploadThing integrations prepared
+- [x] Authentication and authorisation implemented — Better Auth with email/password, session management, `/api/me` protected endpoint, all auth flows verified against local D1
 - [ ] Deployment infrastructure established
 
 ## 2. Core Learning Platform

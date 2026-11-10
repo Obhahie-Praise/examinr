@@ -1,0 +1,38 @@
+# Examinr API — local development environment variables
+# Copy this file to .dev.vars and fill in the values.
+# .dev.vars is gitignored and must never be committed.
+# Production secrets are managed through Cloudflare's secret management (wrangler secret put).
+
+# ---------------------------------------------------------------------------
+# Core application
+# ---------------------------------------------------------------------------
+APP_ENV=development
+API_URL=http://localhost:8787
+WEB_APP_URL=http://localhost:3000
+
+# ---------------------------------------------------------------------------
+# Better Auth
+# Generate a secret with: openssl rand -base64 32
+# ---------------------------------------------------------------------------
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:8787
+
+# ---------------------------------------------------------------------------
+# Google Gemini
+# Obtain from: https://aistudio.google.com/app/apikey
+# ---------------------------------------------------------------------------
+GEMINI_API_KEY=
+
+# ---------------------------------------------------------------------------
+# UploadThing
+# Obtain from: https://uploadthing.com/dashboard
+# ---------------------------------------------------------------------------
+UPLOADTHING_TOKEN=
+
+# ---------------------------------------------------------------------------
+# Cloudflare (used by drizzle-kit for remote D1 migrations only)
+# Not required for local development. Leave blank for local dev.
+# ---------------------------------------------------------------------------
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_DATABASE_ID=497d6ee9-3ec2-4a18-b82e-80ebe7f8cd80
+CLOUDFLARE_API_TOKEN=

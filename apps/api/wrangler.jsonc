@@ -2,7 +2,16 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-10-08"
+  "compatibility_date": "2026-10-08",
+   "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "examinr-dev",
+      "database_id": "497d6ee9-3ec2-4a18-b82e-80ebe7f8cd80",
+      "migrations_dir": "drizzle"
+    }
+  ],
   // "compatibility_flags": [
   //   "nodejs_compat"
   // ],

@@ -9,6 +9,14 @@
       "ESNext"
     ],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "types": [
+      "node"
+    ]
   },
+  "include": [
+    "src/**/*.ts",
+    "drizzle.config.ts",
+    "worker-configuration.d.ts"
+  ]
 }
