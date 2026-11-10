@@ -177,6 +177,8 @@ Environment variables and service-specific setup may be required as integrations
 | [Design System](docs/DESIGN_SYSTEM.md) | Visual identity, components and interface conventions |
 | [Roadmap](docs/ROADMAP.md) | Development phases, priorities and planned work |
 | [Progress](docs/PROGRESS.md) | Product milestones and implementation status |
+| [Notion Development Progress Sync](docs/NOTION_PROGRESS_SYNC.md) | Secure server-to-server project development updates to Notion |
+| [Notion Study Progress Sync](docs/NOTION_STUDY_PROGRESS_SYNC.md) | Secure learner study-session updates to Notion |
 
 ## Development Principles
 
