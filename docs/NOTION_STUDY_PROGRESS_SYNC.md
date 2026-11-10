@@ -8,15 +8,25 @@ This integration records completed learner activity in the **Study Sessions** da
 
 Server-to-server only. It uses the same bearer secret as the development progress integration.
 
-## Worker configuration
+## Required configuration
 
-| Variable | Type | Value |
-|---|---|---|
-| `NOTION_API_KEY` | Secret | Internal Notion integration token |
-| `EXAMINR_NOTION_SYNC_SECRET` | Secret | High-entropy shared secret |
-| `NOTION_STUDY_DATA_SOURCE_ID` | Variable | `70876bdf-8be6-493e-a80e-f8a837520a5b` |
+The Study Sessions data-source ID is already configured in `apps/api/wrangler.jsonc`.
+
+Set these Worker secrets:
+
+- `NOTION_API_KEY`: internal Notion integration token.
+- `EXAMINR_NOTION_SYNC_SECRET`: high-entropy shared secret.
 
 Share **Study Sessions**, **Learning Tracker**, and **Goals** with the internal Notion integration. Topic and goal relations are optional; when sent, page IDs must be valid Notion UUIDs.
+
+## Cloudflare Worker secrets
+
+```powershell
+pnpm --filter api exec wrangler secret put NOTION_API_KEY
+pnpm --filter api exec wrangler secret put EXAMINR_NOTION_SYNC_SECRET
+```
+
+For local development, set them in `apps/api/.dev.vars`, which must never be committed.
 
 ## Event contract
 
@@ -52,11 +62,11 @@ Send `Authorization: Bearer <EXAMINR_NOTION_SYNC_SECRET>`. Never expose the Noti
 
 The API stores event IDs in D1 and checks the Notion data source before creating a row. Retrying the same event ID will not intentionally create a second session record.
 
-## Migration
+## Migration and deployment
 
 ```powershell
 pnpm --filter api drizzle:migrate:local
 pnpm --filter api drizzle:migrate:remote
 ```
 
-The integration is not live until Notion sharing, secrets and vars are configured, a test event succeeds, and a duplicate replay is confirmed.
+The integration is not live until Notion sharing, secrets, D1 migrations, deployment, and end-to-end tests are complete.
