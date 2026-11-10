@@ -3,7 +3,7 @@
   "name": "api",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-08",
-   "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "DB",
@@ -12,36 +12,9 @@
       "migrations_dir": "drizzle"
     }
   ],
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
-  // "observability": {
-  //   "enabled": true,
-  //   "head_sampling_rate": 1
-  // }
+  "vars": {
+    "NOTION_PROGRESS_DATA_SOURCE_ID": "d4e52c31-8e19-41cb-939a-f69dcccc2f95",
+    "NOTION_EXAMINR_PROJECT_PAGE_ID": "414e9fd7-05ba-819c-8ec0-f42baeacded0",
+    "NOTION_STUDY_DATA_SOURCE_ID": "70876bdf-8be6-493e-a80e-f8a837520a5b"
+  }
 }
