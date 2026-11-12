@@ -9,9 +9,20 @@ export interface AuthEnvironment {
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   WEB_APP_URL: string;
+  /** Optional comma-separated list of additional trusted origins (e.g. preview domains). */
+  CORS_ORIGINS?: string;
 }
 
 export function createAuth(env: AuthEnvironment) {
+  // Build the full list of trusted origins from WEB_APP_URL and optional CORS_ORIGINS.
+  const extraOrigins = env.CORS_ORIGINS
+    ? env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+    : [];
+  const trustedOrigins = [
+    ...(env.WEB_APP_URL ? [env.WEB_APP_URL] : []),
+    ...extraOrigins,
+  ];
+
   return betterAuth({
     // Better Auth accepts any object that satisfies its D1Database interface.
     // The Cloudflare Workers global D1Database is structurally compatible.
@@ -21,10 +32,14 @@ export function createAuth(env: AuthEnvironment) {
 
     baseURL: env.BETTER_AUTH_URL,
 
-    trustedOrigins: env.WEB_APP_URL ? [env.WEB_APP_URL] : [],
+    trustedOrigins,
 
     emailAndPassword: {
       enabled: true,
+      // Email verification is not yet functional — no email provider is configured.
+      // Set to false to allow registration without a verification step.
+      // Update this when an email delivery service is added.
+      requireEmailVerification: false,
     },
 
     advanced: {

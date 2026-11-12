@@ -1,50 +1,34 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import "tailwindcss";
+
+@theme {
+  /* Primary font — DM Sans, injected by next/font/google as --font-dm-sans */
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+
+  /* Examinr brand colours */
+  --color-brand-black: #0f0f0f;
+  --color-brand-white: #ffffff;
+  --color-brand-gray-50: #f8f8f8;
+  --color-brand-gray-100: #f3f4f6;
+  --color-brand-gray-200: #e5e7eb;
+  --color-brand-gray-400: #9ca3af;
+  --color-brand-gray-500: #6b7280;
+  --color-brand-gray-700: #374151;
+
+  /* Status colours */
+  --color-status-success: #16a34a;
+  --color-status-warning: #d97706;
+  --color-status-error: #dc2626;
+  --color-status-info: #2563eb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Global base styles */
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
 a {
   color: inherit;
   text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
 }

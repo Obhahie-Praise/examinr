@@ -11,6 +11,8 @@ import { aiCredentialsRouter } from "./routes/ai-credentials";
  * DB is the Cloudflare D1 binding (binding name must match wrangler.jsonc).
  */
 type Bindings = AuthEnvironment & {
+  /** Comma-separated list of additional allowed origins beyond WEB_APP_URL. */
+  CORS_ORIGINS?: string;
   GEMINI_API_KEY?: string;
   UPLOADTHING_TOKEN?: string;
   AI_CREDENTIAL_ENCRYPTION_KEY: string;
@@ -22,13 +24,19 @@ const app = new Hono<{ Bindings: Bindings }>();
 // ---------------------------------------------------------------------------
 // CORS
 // Allow the web application to make credentialed requests to the API.
-// WEB_APP_URL is read at request time so it reflects the runtime environment.
+// WEB_APP_URL is the primary allowed origin; CORS_ORIGINS can extend the list
+// (e.g. preview deployments, admin tools on different domains).
+// Both are read at request time so they reflect the runtime environment.
 // ---------------------------------------------------------------------------
 app.use("/api/*", async (c, next) => {
   const webAppUrl = c.env.WEB_APP_URL ?? "http://localhost:3000";
+  const extraOrigins = c.env.CORS_ORIGINS
+    ? c.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+    : [];
+  const allowedOrigins = [webAppUrl, ...extraOrigins];
 
   const corsMiddleware = cors({
-    origin: webAppUrl,
+    origin: (origin) => (allowedOrigins.includes(origin) ? origin : allowedOrigins[0]),
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
     credentials: true,

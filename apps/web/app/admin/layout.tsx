@@ -10,62 +10,25 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="admin-shell">
-      <nav className="admin-nav">
-        <div className="admin-nav-brand">Examinr Admin</div>
-        <ul className="admin-nav-links">
+    <div className="min-h-screen flex flex-col font-sans bg-gray-50">
+      <nav className="flex items-center gap-8 px-8 h-14 bg-[#0f0f0f] text-white border-b border-[#222]">
+        <div className="text-[0.95rem] font-semibold tracking-tight text-white">
+          Examinr Admin
+        </div>
+        <ul className="list-none flex gap-6 m-0 p-0">
           <li>
-            <a href="/admin/ai">AI Gateway</a>
+            <a
+              href="/admin/ai"
+              className="text-sm text-[#aaa] no-underline transition-colors duration-150 hover:text-white"
+            >
+              AI Gateway
+            </a>
           </li>
         </ul>
       </nav>
-      <main className="admin-content">{children}</main>
-      <style>{`
-        .admin-shell {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          font-family: var(--font-geist-sans, system-ui, sans-serif);
-          background: #f8f8f8;
-        }
-        .admin-nav {
-          display: flex;
-          align-items: center;
-          gap: 2rem;
-          padding: 0 2rem;
-          height: 56px;
-          background: #0f0f0f;
-          color: #fff;
-          border-bottom: 1px solid #222;
-        }
-        .admin-nav-brand {
-          font-size: 0.95rem;
-          font-weight: 600;
-          letter-spacing: -0.02em;
-          color: #fff;
-        }
-        .admin-nav-links {
-          list-style: none;
-          display: flex;
-          gap: 1.5rem;
-        }
-        .admin-nav-links a {
-          font-size: 0.875rem;
-          color: #aaa;
-          text-decoration: none;
-          transition: color 0.15s;
-        }
-        .admin-nav-links a:hover {
-          color: #fff;
-        }
-        .admin-content {
-          flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
-          width: 100%;
-          margin: 0 auto;
-        }
-      `}</style>
+      <main className="flex-1 p-8 max-w-[1200px] w-full mx-auto">
+        {children}
+      </main>
     </div>
   );
 }

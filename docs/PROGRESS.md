@@ -10,6 +10,10 @@ Update this document as milestones are completed. Detailed implementation tasks 
 - [x] Shared packages and configurations established
 - [x] Database and API foundations established — Hono on Cloudflare Workers, D1 connected, Drizzle ORM initialised, Better Auth tables migrated to local D1, health endpoints operational, Gemini and UploadThing integrations prepared
 - [x] Authentication and authorisation implemented — Better Auth with email/password, session management, `/api/me` protected endpoint, all auth flows verified against local D1
+- [x] Frontend auth client integrated — `better-auth/client` installed in `apps/web`, `lib/auth-client.ts` singleton exposes `signIn`, `signOut`, `signUp`, `useSession`, `getSession`; connects to `NEXT_PUBLIC_API_URL`
+- [x] Tailwind CSS v4 installed — `tailwindcss@4.1.0`, `@tailwindcss/postcss@4.1.0`, `postcss@8.5.0` in `apps/web`; `postcss.config.mjs` configured; `globals.css` uses `@import "tailwindcss"` and `@theme` with brand tokens
+- [x] DM Sans set as primary typeface — `DM_Sans` via `next/font/google` in root `layout.tsx`; CSS variable `--font-dm-sans` injected; Tailwind `--font-sans` resolves to DM Sans; Geist fonts removed
+- [x] Existing styling migrated to Tailwind — scaffold page.tsx replaced, page.module.css deleted, admin/layout.tsx and admin/ai/page.tsx rewritten with Tailwind utilities; no inline JSX style blocks remain
 - [ ] Deployment infrastructure established
 
 ## 2. Core Learning Platform

@@ -92,39 +92,20 @@ async function apiFetch<T>(
 // ---------------------------------------------------------------------------
 
 function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    active: "#16a34a",
-    disabled: "#6b7280",
-    invalid: "#dc2626",
-    cooldown: "#d97706",
-    success: "#16a34a",
-    failure: "#dc2626",
+  const styles: Record<string, { dot: string; text: string; bg: string; border: string }> = {
+    active:   { dot: "bg-green-600",  text: "text-green-700",  bg: "bg-green-50",  border: "border-green-200" },
+    disabled: { dot: "bg-gray-500",   text: "text-gray-600",   bg: "bg-gray-50",   border: "border-gray-200"  },
+    invalid:  { dot: "bg-red-600",    text: "text-red-700",    bg: "bg-red-50",    border: "border-red-200"   },
+    cooldown: { dot: "bg-amber-500",  text: "text-amber-700",  bg: "bg-amber-50",  border: "border-amber-200" },
+    success:  { dot: "bg-green-600",  text: "text-green-700",  bg: "bg-green-50",  border: "border-green-200" },
+    failure:  { dot: "bg-red-600",    text: "text-red-700",    bg: "bg-red-50",    border: "border-red-200"   },
   };
-  const color = colors[status] ?? "#6b7280";
+  const s = styles[status] ?? styles["disabled"]!;
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.3rem",
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        color,
-        background: color + "15",
-        padding: "0.2rem 0.6rem",
-        borderRadius: "9999px",
-        border: `1px solid ${color}30`,
-      }}
+      className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border ${s.text} ${s.bg} ${s.border}`}
     >
-      <span
-        style={{
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: color,
-          display: "inline-block",
-        }}
-      />
+      <span className={`w-1.5 h-1.5 rounded-full inline-block ${s.dot}`} />
       {status}
     </span>
   );
@@ -141,35 +122,18 @@ function StatCard({
 }: {
   label: string;
   value: number | string;
-  accent?: string;
+  accent?: "green" | "red" | "amber";
 }) {
+  const valueColor =
+    accent === "green" ? "text-green-700" :
+    accent === "red"   ? "text-red-600"   :
+    accent === "amber" ? "text-amber-600" :
+    "text-[#0f0f0f]";
+
   return (
-    <div
-      style={{
-        background: "#fff",
-        border: "1px solid #e5e7eb",
-        borderRadius: 8,
-        padding: "1.25rem 1.5rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.3rem",
-      }}
-    >
-      <span
-        style={{ fontSize: "0.75rem", color: "#6b7280", letterSpacing: "0.04em", textTransform: "uppercase" }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontSize: "1.75rem",
-          fontWeight: 700,
-          color: accent ?? "#0f0f0f",
-          lineHeight: 1,
-        }}
-      >
-        {value}
-      </span>
+    <div className="bg-white border border-gray-200 rounded-lg px-6 py-5 flex flex-col gap-1">
+      <span className="text-xs text-gray-500 uppercase tracking-widest">{label}</span>
+      <span className={`text-[1.75rem] font-bold leading-none ${valueColor}`}>{value}</span>
     </div>
   );
 }
@@ -209,32 +173,25 @@ function AddCredentialForm({ onAdded }: { onAdded: () => void }) {
 
   if (!open) {
     return (
-      <button className="btn-primary" onClick={() => setOpen(true)}>
+      <button
+        className="bg-[#0f0f0f] text-white border-0 rounded-md px-4 py-2 text-sm font-medium cursor-pointer transition-opacity hover:opacity-85"
+        onClick={() => setOpen(true)}
+      >
         Add API Key
       </button>
     );
   }
 
   return (
-    <div
-      style={{
-        background: "#fff",
-        border: "1px solid #e5e7eb",
-        borderRadius: 8,
-        padding: "1.5rem",
-        maxWidth: 480,
-      }}
-    >
-      <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 600 }}>
-        Add Gemini API Key
-      </h3>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-          <label style={{ fontSize: "0.8rem", fontWeight: 500, color: "#374151" }}>
+    <div className="bg-white border border-gray-200 rounded-lg p-6 max-w-[480px]">
+      <h3 className="text-base font-semibold mt-0 mb-4">Add Gemini API Key</h3>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-1">
+          <label className="text-[0.8rem] font-medium text-gray-700">
             Credential Name
           </label>
           <input
-            className="form-input"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full outline-none transition-colors font-[inherit] focus:border-[#0f0f0f]"
             type="text"
             placeholder="e.g. Gemini Account 01"
             value={name}
@@ -243,12 +200,10 @@ function AddCredentialForm({ onAdded }: { onAdded: () => void }) {
             maxLength={100}
           />
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-          <label style={{ fontSize: "0.8rem", fontWeight: 500, color: "#374151" }}>
-            API Key
-          </label>
+        <div className="flex flex-col gap-1">
+          <label className="text-[0.8rem] font-medium text-gray-700">API Key</label>
           <input
-            className="form-input"
+            className="border border-gray-300 rounded-md px-3 py-2 text-sm w-full outline-none transition-colors font-[inherit] focus:border-[#0f0f0f]"
             type="password"
             placeholder="AIza... or AQ.Ab..."
             value={apiKey}
@@ -257,33 +212,28 @@ function AddCredentialForm({ onAdded }: { onAdded: () => void }) {
             minLength={10}
             autoComplete="off"
           />
-          <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+          <span className="text-xs text-gray-400">
             The key is encrypted before storage and never shown again.
           </span>
         </div>
         {error && (
-          <div
-            style={{
-              fontSize: "0.8rem",
-              color: "#dc2626",
-              background: "#fef2f2",
-              border: "1px solid #fecaca",
-              borderRadius: 6,
-              padding: "0.5rem 0.75rem",
-            }}
-          >
+          <div className="text-[0.8rem] text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
             {error}
           </div>
         )}
-        <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+        <div className="flex gap-3 justify-end">
           <button
             type="button"
-            className="btn-secondary"
+            className="bg-white text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm font-medium cursor-pointer hover:bg-gray-50"
             onClick={() => { setOpen(false); setError(null); }}
           >
             Cancel
           </button>
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button
+            type="submit"
+            className="bg-[#0f0f0f] text-white border-0 rounded-md px-4 py-2 text-sm font-medium cursor-pointer transition-opacity hover:opacity-85 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
             {loading ? "Saving..." : "Save"}
           </button>
         </div>
@@ -355,28 +305,29 @@ function CredentialRow({
     : "Never";
 
   return (
-    <tr style={{ borderTop: !isFirst ? "1px solid #f3f4f6" : undefined }}>
-      <td>
+    <tr className={!isFirst ? "border-t border-gray-100" : undefined}>
+      {/* Name */}
+      <td className="px-4 py-3 align-middle">
         {renaming ? (
-          <form
-            onSubmit={handleRename}
-            style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}
-          >
+          <form onSubmit={handleRename} className="flex gap-2 items-center">
             <input
-              className="form-input"
-              style={{ padding: "0.3rem 0.5rem", fontSize: "0.85rem" }}
+              className="border border-gray-300 rounded px-2 py-1 text-[0.85rem] outline-none font-[inherit] focus:border-[#0f0f0f]"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               required
               maxLength={100}
               autoFocus
             />
-            <button type="submit" className="btn-sm" disabled={loading}>
+            <button
+              type="submit"
+              className="bg-[#0f0f0f] text-white border-0 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:opacity-80 disabled:opacity-40"
+              disabled={loading}
+            >
               Save
             </button>
             <button
               type="button"
-              className="btn-sm-secondary"
+              className="bg-white text-gray-700 border border-gray-300 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:bg-gray-50"
               onClick={() => { setRenaming(false); setNewName(credential.name); }}
             >
               Cancel
@@ -384,7 +335,7 @@ function CredentialRow({
           </form>
         ) : (
           <span
-            style={{ cursor: "pointer", fontWeight: 500 }}
+            className="cursor-pointer font-medium hover:underline"
             title="Click to rename"
             onClick={() => setRenaming(true)}
           >
@@ -392,33 +343,43 @@ function CredentialRow({
           </span>
         )}
       </td>
-      <td style={{ fontFamily: "var(--font-geist-mono, monospace)", fontSize: "0.8rem", color: "#6b7280" }}>
+
+      {/* Masked key */}
+      <td className="px-4 py-3 align-middle font-mono text-[0.8rem] text-gray-500">
         {credential.maskedKey}
       </td>
-      <td>
-        <span style={{ fontSize: "0.8rem", color: "#6b7280", textTransform: "capitalize" }}>
-          {credential.provider}
-        </span>
+
+      {/* Provider */}
+      <td className="px-4 py-3 align-middle">
+        <span className="text-[0.8rem] text-gray-500 capitalize">{credential.provider}</span>
       </td>
-      <td>
+
+      {/* Status */}
+      <td className="px-4 py-3 align-middle">
         <StatusBadge status={credential.status} />
       </td>
-      <td style={{ fontSize: "0.8rem", color: "#6b7280" }}>{lastUsed}</td>
-      <td>
+
+      {/* Last used */}
+      <td className="px-4 py-3 align-middle text-[0.8rem] text-gray-500">{lastUsed}</td>
+
+      {/* Health */}
+      <td className="px-4 py-3 align-middle">
         {credential.lastErrorCategory ? (
-          <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>
+          <span className="text-xs text-red-600">
             {credential.lastErrorCategory}
             {credential.consecutiveFailures > 0 && ` (x${credential.consecutiveFailures})`}
           </span>
         ) : (
-          <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>—</span>
+          <span className="text-xs text-gray-400">—</span>
         )}
       </td>
-      <td>
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", alignItems: "center" }}>
+
+      {/* Actions */}
+      <td className="px-4 py-3 align-middle">
+        <div className="flex gap-1.5 flex-wrap items-center">
           {credential.status === "disabled" ? (
             <button
-              className="btn-sm"
+              className="bg-[#0f0f0f] text-white border-0 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:opacity-80 disabled:opacity-40"
               onClick={() => doAction("/enable")}
               disabled={loading}
             >
@@ -426,24 +387,26 @@ function CredentialRow({
             </button>
           ) : (
             <button
-              className="btn-sm-secondary"
+              className="bg-white text-gray-700 border border-gray-300 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:bg-gray-50"
               onClick={() => doAction("/disable")}
               disabled={loading}
             >
               Disable
             </button>
           )}
+
           <button
-            className="btn-sm"
+            className="bg-[#0f0f0f] text-white border-0 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:opacity-80 disabled:opacity-40 disabled:cursor-not-allowed"
             onClick={handleTest}
             disabled={loading || credential.status === "disabled"}
             title="Makes a real API call to validate the key"
           >
             Test
           </button>
+
           {!confirmDelete ? (
             <button
-              className="btn-sm-danger"
+              className="bg-red-50 text-red-600 border border-red-200 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:bg-red-100 disabled:opacity-40"
               onClick={() => setConfirmDelete(true)}
               disabled={loading}
             >
@@ -451,30 +414,32 @@ function CredentialRow({
             </button>
           ) : (
             <>
-              <span style={{ fontSize: "0.75rem", color: "#dc2626" }}>Confirm?</span>
-              <button className="btn-sm-danger" onClick={handleDelete} disabled={loading}>
+              <span className="text-xs text-red-600">Confirm?</span>
+              <button
+                className="bg-red-50 text-red-600 border border-red-200 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:bg-red-100 disabled:opacity-40"
+                onClick={handleDelete}
+                disabled={loading}
+              >
                 Yes, delete
               </button>
               <button
-                className="btn-sm-secondary"
+                className="bg-white text-gray-700 border border-gray-300 rounded px-2.5 py-1 text-xs font-medium cursor-pointer hover:bg-gray-50"
                 onClick={() => setConfirmDelete(false)}
               >
                 Cancel
               </button>
             </>
           )}
+
           {testResult && (
             <span
-              style={{
-                fontSize: "0.75rem",
-                color: testResult.valid ? "#16a34a" : "#dc2626",
-                background: testResult.valid ? "#f0fdf4" : "#fef2f2",
-                border: `1px solid ${testResult.valid ? "#bbf7d0" : "#fecaca"}`,
-                borderRadius: 4,
-                padding: "0.15rem 0.4rem",
-              }}
+              className={`text-xs rounded px-1.5 py-0.5 border ${
+                testResult.valid
+                  ? "text-green-700 bg-green-50 border-green-200"
+                  : "text-red-600 bg-red-50 border-red-200"
+              }`}
             >
-              {testResult.valid ? "Valid" : testResult.error ?? "Invalid"}
+              {testResult.valid ? "Valid" : (testResult.error ?? "Invalid")}
             </span>
           )}
         </div>
@@ -482,6 +447,13 @@ function CredentialRow({
     </tr>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Shared table header / cell classes
+// ---------------------------------------------------------------------------
+
+const thCls =
+  "text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-widest whitespace-nowrap";
 
 // ---------------------------------------------------------------------------
 // Main dashboard page
@@ -524,37 +496,20 @@ export default function AiGatewayDashboard() {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: "2rem",
-        }}
-      >
+      {/* Page header */}
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>
-            AI Gateway
-          </h1>
-          <p style={{ color: "#6b7280", fontSize: "0.875rem", margin: "0.25rem 0 0" }}>
+          <h1 className="text-2xl font-bold m-0">AI Gateway</h1>
+          <p className="text-gray-500 text-sm mt-1 mb-0">
             Manage Gemini API credentials and monitor gateway health.
           </p>
         </div>
         <AddCredentialForm onAdded={fetchData} />
       </div>
 
+      {/* Error banner */}
       {error && (
-        <div
-          style={{
-            background: "#fef2f2",
-            border: "1px solid #fecaca",
-            borderRadius: 8,
-            padding: "1rem 1.25rem",
-            color: "#dc2626",
-            fontSize: "0.875rem",
-            marginBottom: "1.5rem",
-          }}
-        >
+        <div className="bg-red-50 border border-red-200 rounded-lg px-5 py-4 text-red-600 text-sm mb-6">
           {error === "Authentication required"
             ? "You must be signed in as a super-admin to access this page."
             : error === "Forbidden"
@@ -565,29 +520,23 @@ export default function AiGatewayDashboard() {
 
       {/* Overview stats */}
       {(stats || overview) && (
-        <section style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <section className="mb-8">
+          <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-widest mb-3">
             Overview
           </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-              gap: "0.75rem",
-            }}
-          >
-            <StatCard label="Total Keys" value={stats?.total ?? 0} />
-            <StatCard label="Active" value={stats?.active ?? 0} accent="#16a34a" />
-            <StatCard label="Disabled" value={stats?.disabled ?? 0} />
-            <StatCard label="Invalid" value={stats?.invalid ?? 0} accent={stats?.invalid ? "#dc2626" : undefined} />
-            <StatCard label="Cooldown" value={stats?.cooldown ?? 0} accent={stats?.cooldown ? "#d97706" : undefined} />
+          <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))" }}>
+            <StatCard label="Total Keys"      value={stats?.total ?? 0} />
+            <StatCard label="Active"          value={stats?.active ?? 0}    accent="green" />
+            <StatCard label="Disabled"        value={stats?.disabled ?? 0} />
+            <StatCard label="Invalid"         value={stats?.invalid ?? 0}   accent={stats?.invalid ? "red" : undefined} />
+            <StatCard label="Cooldown"        value={stats?.cooldown ?? 0}  accent={stats?.cooldown ? "amber" : undefined} />
             {overview && (
               <>
                 <StatCard label="Total Requests" value={overview.usage.totalRequests} />
                 <StatCard
                   label="Success Rate"
                   value={`${overview.usage.recentSuccessRate}%`}
-                  accent={overview.usage.recentSuccessRate >= 90 ? "#16a34a" : "#d97706"}
+                  accent={overview.usage.recentSuccessRate >= 90 ? "green" : "amber"}
                 />
               </>
             )}
@@ -596,42 +545,32 @@ export default function AiGatewayDashboard() {
       )}
 
       {/* Credential list */}
-      <section style={{ marginBottom: "2rem" }}>
-        <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+      <section className="mb-8">
+        <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-widest mb-3">
           Credentials
         </h2>
 
         {loading ? (
-          <div style={{ padding: "3rem", textAlign: "center", color: "#9ca3af", background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb" }}>
+          <div className="py-12 text-center text-gray-400 bg-white rounded-lg border border-gray-200">
             Loading...
           </div>
         ) : credentials.length === 0 && !error ? (
-          <div
-            style={{
-              padding: "3rem",
-              textAlign: "center",
-              color: "#9ca3af",
-              background: "#fff",
-              borderRadius: 8,
-              border: "1px solid #e5e7eb",
-              fontSize: "0.875rem",
-            }}
-          >
+          <div className="py-12 text-center text-gray-400 bg-white rounded-lg border border-gray-200 text-sm">
             No credentials added yet. Click &ldquo;Add API Key&rdquo; to get started.
           </div>
         ) : (
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
                 <thead>
-                  <tr style={{ background: "#f9fafb" }}>
-                    <th style={thStyle}>Name</th>
-                    <th style={thStyle}>Key</th>
-                    <th style={thStyle}>Provider</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Last Used</th>
-                    <th style={thStyle}>Health</th>
-                    <th style={thStyle}>Actions</th>
+                  <tr className="bg-gray-50">
+                    <th className={thCls}>Name</th>
+                    <th className={thCls}>Key</th>
+                    <th className={thCls}>Provider</th>
+                    <th className={thCls}>Status</th>
+                    <th className={thCls}>Last Used</th>
+                    <th className={thCls}>Health</th>
+                    <th className={thCls}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -650,47 +589,45 @@ export default function AiGatewayDashboard() {
         )}
       </section>
 
-      {/* Recent events */}
+      {/* Recent activity */}
       {overview && overview.recentEvents.length > 0 && (
         <section>
-          <h2 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#374151", marginBottom: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <h2 className="text-xs font-semibold text-gray-700 uppercase tracking-widest mb-3">
             Recent Activity
           </h2>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
+          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[0.8rem]">
                 <thead>
-                  <tr style={{ background: "#f9fafb" }}>
-                    <th style={thStyle}>Model</th>
-                    <th style={thStyle}>Modality</th>
-                    <th style={thStyle}>Status</th>
-                    <th style={thStyle}>Latency</th>
-                    <th style={thStyle}>Retries</th>
-                    <th style={thStyle}>Time</th>
+                  <tr className="bg-gray-50">
+                    <th className={thCls}>Model</th>
+                    <th className={thCls}>Modality</th>
+                    <th className={thCls}>Status</th>
+                    <th className={thCls}>Latency</th>
+                    <th className={thCls}>Retries</th>
+                    <th className={thCls}>Time</th>
                   </tr>
                 </thead>
                 <tbody>
                   {overview.recentEvents.map((event, i) => (
-                    <tr key={event.id} style={{ borderTop: i > 0 ? "1px solid #f3f4f6" : undefined }}>
-                      <td style={tdStyle}>
-                        <span style={{ fontFamily: "var(--font-geist-mono, monospace)", fontSize: "0.75rem" }}>
-                          {event.model}
-                        </span>
+                    <tr key={event.id} className={i > 0 ? "border-t border-gray-100" : undefined}>
+                      <td className="px-4 py-3 align-middle">
+                        <span className="font-mono text-xs">{event.model}</span>
                       </td>
-                      <td style={tdStyle}>{event.modality}</td>
-                      <td style={tdStyle}>
+                      <td className="px-4 py-3 align-middle text-gray-600">{event.modality}</td>
+                      <td className="px-4 py-3 align-middle">
                         <StatusBadge status={event.status} />
                         {event.errorCategory && (
-                          <span style={{ marginLeft: "0.4rem", fontSize: "0.7rem", color: "#dc2626" }}>
+                          <span className="ml-1.5 text-[0.7rem] text-red-600">
                             ({event.errorCategory})
                           </span>
                         )}
                       </td>
-                      <td style={tdStyle}>
+                      <td className="px-4 py-3 align-middle text-gray-600">
                         {event.latencyMs !== null ? `${event.latencyMs}ms` : "—"}
                       </td>
-                      <td style={tdStyle}>{event.retryCount}</td>
-                      <td style={tdStyle}>
+                      <td className="px-4 py-3 align-middle text-gray-600">{event.retryCount}</td>
+                      <td className="px-4 py-3 align-middle text-gray-500">
                         {new Date(event.createdAt * 1000).toLocaleTimeString()}
                       </td>
                     </tr>
@@ -701,103 +638,6 @@ export default function AiGatewayDashboard() {
           </div>
         </section>
       )}
-
-      <style>{`
-        .btn-primary {
-          background: #0f0f0f;
-          color: #fff;
-          border: none;
-          border-radius: 6px;
-          padding: 0.5rem 1rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: opacity 0.15s;
-        }
-        .btn-primary:hover { opacity: 0.85; }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .btn-secondary {
-          background: #fff;
-          color: #374151;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          padding: 0.5rem 1rem;
-          font-size: 0.875rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.15s;
-        }
-        .btn-secondary:hover { background: #f9fafb; }
-
-        .btn-sm {
-          background: #0f0f0f;
-          color: #fff;
-          border: none;
-          border-radius: 4px;
-          padding: 0.25rem 0.6rem;
-          font-size: 0.75rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: opacity 0.15s;
-        }
-        .btn-sm:hover { opacity: 0.8; }
-        .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .btn-sm-secondary {
-          background: #fff;
-          color: #374151;
-          border: 1px solid #d1d5db;
-          border-radius: 4px;
-          padding: 0.25rem 0.6rem;
-          font-size: 0.75rem;
-          font-weight: 500;
-          cursor: pointer;
-        }
-        .btn-sm-secondary:hover { background: #f9fafb; }
-
-        .btn-sm-danger {
-          background: #fef2f2;
-          color: #dc2626;
-          border: 1px solid #fecaca;
-          border-radius: 4px;
-          padding: 0.25rem 0.6rem;
-          font-size: 0.75rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.15s;
-        }
-        .btn-sm-danger:hover { background: #fee2e2; }
-        .btn-sm-danger:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .form-input {
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          padding: 0.5rem 0.75rem;
-          font-size: 0.875rem;
-          width: 100%;
-          outline: none;
-          transition: border-color 0.15s;
-          font-family: inherit;
-        }
-        .form-input:focus { border-color: #0f0f0f; }
-      `}</style>
     </>
   );
 }
-
-const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "0.6rem 1rem",
-  fontSize: "0.75rem",
-  fontWeight: 600,
-  color: "#6b7280",
-  letterSpacing: "0.04em",
-  textTransform: "uppercase",
-  whiteSpace: "nowrap",
-};
-
-const tdStyle: React.CSSProperties = {
-  padding: "0.75rem 1rem",
-  verticalAlign: "middle",
-};
