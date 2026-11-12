@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { createAuth, type AuthEnvironment } from "./auth/auth";
 import { health } from "./routes/health";
 import { me } from "./routes/me";
+import { aiCredentialsRouter } from "./routes/ai-credentials";
 
 /**
  * Full set of environment bindings available to this Worker.
@@ -12,6 +13,8 @@ import { me } from "./routes/me";
 type Bindings = AuthEnvironment & {
   GEMINI_API_KEY?: string;
   UPLOADTHING_TOKEN?: string;
+  AI_CREDENTIAL_ENCRYPTION_KEY: string;
+  SUPER_ADMIN_EMAILS?: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -63,5 +66,11 @@ app.all("/api/auth/*", (c) => {
 // Protected routes
 // ---------------------------------------------------------------------------
 app.route("/api/me", me);
+
+// ---------------------------------------------------------------------------
+// AI Gateway — super-admin credential management
+// All routes enforce server-side super-admin authorization.
+// ---------------------------------------------------------------------------
+app.route("/api/admin/ai/credentials", aiCredentialsRouter);
 
 export default app;

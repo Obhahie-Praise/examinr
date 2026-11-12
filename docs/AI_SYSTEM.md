@@ -568,7 +568,175 @@ The following decisions require confirmation during implementation:
 
 Do not hardcode unresolved decisions into the architecture.
 
-## 18. Relationship to Other Documents
+## 18. Implemented AI Gateway (November 2026)
+
+The following describes the implemented gateway as it currently exists in `apps/api/src/lib/ai/gateway/`.
+
+### Architecture
+
+The gateway is built as a TypeScript module inside the Cloudflare Workers API app. It does not live in a separate `packages/ai` package — it was placed inside `apps/api` to keep it close to the D1 binding and avoid unnecessary cross-package complexity at this stage.
+
+```text
+apps/api/src/lib/ai/gateway/
+├── index.ts              — Public AiGateway interface and createAiGateway factory
+├── types.ts              — Shared TypeScript types and Zod schemas
+├── encryption.ts         — AES-256-GCM credential encryption via Web Crypto API
+├── credential-manager.ts — Credential CRUD, health tracking, masked key management
+├── router.ts             — LRU credential selection with retry context and quota circuit-breaker
+├── model-registry.ts     — Registered Gemini models and capability flags
+├── errors.ts             — Error classification, GatewayError, AllCredentialsUnavailableError
+├── gemini-adapter.ts     — Gemini text, streaming, multimodal, audio, and Live session support
+├── usage-manager.ts      — Usage event and route event recording to D1
+└── auth-middleware.ts    — Hono middleware enforcing super-admin access
+```
+
+### Credential encryption
+
+Credentials are encrypted with AES-256-GCM before D1 storage. Each encryption operation generates a unique IV. The master key is stored as a Cloudflare Worker secret — never in D1, source code, or environment files.
+
+**Setup:**
+
+```bash
+# Generate a 32-byte key
+openssl rand -base64 32
+
+# Configure as a Worker secret
+wrangler secret put AI_CREDENTIAL_ENCRYPTION_KEY
+```
+
+The database holds: encrypted ciphertext, IV, key version, and masked key. Without the external secret, a D1 dump reveals no plaintext credential.
+
+**Key rotation:** Increment `KEY_VERSION` in `encryption.ts`, re-encrypt existing credentials using the old key and store with the new key, then update the Worker secret. The `keyVersion` column in `ai_credentials` supports this.
+
+### Database schema
+
+Three tables are used, defined in `apps/api/src/db/schema/ai.ts`:
+
+- `ai_credentials` — credential records (encrypted key, IV, version, masked key, status, health metadata)
+- `ai_usage_events` — per-request usage records (tokens, latency, status, error category)
+- `ai_route_events` — routing decisions and failover events
+
+Migrations are in `apps/api/drizzle/`. Apply locally with:
+
+```bash
+wrangler d1 migrations apply examinr-dev --local
+```
+
+### Credential management API
+
+All endpoints are under `/api/admin/ai/credentials`. They require an authenticated super-admin session.
+
+| Method | Path | Action |
+|---|---|---|
+| GET | `/api/admin/ai/credentials` | List credentials and stats |
+| POST | `/api/admin/ai/credentials` | Add a credential (name + apiKey + provider) |
+| GET | `/api/admin/ai/credentials/:id` | Get one credential |
+| PATCH | `/api/admin/ai/credentials/:id/name` | Rename |
+| POST | `/api/admin/ai/credentials/:id/enable` | Enable |
+| POST | `/api/admin/ai/credentials/:id/disable` | Disable |
+| POST | `/api/admin/ai/credentials/:id/test` | Test validity (live API call) |
+| DELETE | `/api/admin/ai/credentials/:id` | Delete |
+| GET | `/api/admin/ai/credentials/stats/overview` | Usage and health overview |
+
+Raw API keys are **never** returned after submission. Responses include only masked keys.
+
+### Super-admin authorization
+
+Super-admin access is controlled by the `SUPER_ADMIN_EMAILS` Worker secret — a comma-separated list of email addresses. Set it with:
+
+```bash
+wrangler secret put SUPER_ADMIN_EMAILS
+# Enter: admin@example.com,backup@example.com
+```
+
+If the secret is unset, all credential API calls return 503. Unauthorized requests return 401 or 403.
+
+### Routing strategy
+
+The router uses **LRU (least-recently-used) ordering via D1** — no in-memory global state. This distributes load correctly across Worker isolate restarts.
+
+Retry behaviour:
+- Up to 3 total attempts per request.
+- After each failure, the credential is excluded from subsequent attempts.
+- After 2 consecutive quota failures, the router short-circuits with `AllCredentialsUnavailableError` — this conservatively handles shared Google Cloud project quota exhaustion without endless rotation.
+
+### Error classification
+
+The `classifyGeminiError` function in `errors.ts` distinguishes:
+
+| HTTP status / body pattern | Category | Retryable |
+|---|---|---|
+| 429 RESOURCE_EXHAUSTED | `quota_exceeded` | Yes (cooldown) |
+| 429 (other) | `rate_limit` | Yes (cooldown) |
+| 401 | `auth_failure` | No (marks invalid) |
+| 403 + invalid key message | `invalid_credential` | No (marks invalid) |
+| 403 + billing message | `billing_restricted` | No (long cooldown) |
+| 403 (other) | `permission_denied` | No |
+| 400 | `request_invalid` | No |
+| 404 model | `model_unavailable` | No |
+| 500 / 503 | `provider_error` | Yes (short cooldown) |
+| Network | `network_error` | Yes |
+| Timeout | `timeout` | Conditional |
+
+### Supported models
+
+Defined in `model-registry.ts`:
+
+| ID | API name | Key capabilities |
+|---|---|---|
+| `gemini-flash` | `gemini-2.5-flash` | text, image input, audio input, streaming, structured output |
+| `gemini-pro` | `gemini-2.5-pro` | text, image input, audio input, streaming, structured output |
+| `gemini-flash-lite` | `gemini-2.5-flash-lite` | text, image input, streaming, structured output |
+| `gemini-flash-2` | `gemini-2.0-flash` | text, image input, audio input, streaming |
+| `gemini-live` | `gemini-2.0-flash-live-001` | realtime audio, audio output, Live API |
+
+### Gemini Live session flow
+
+1. Backend calls `gateway.provisionLiveSession({ userId, model, systemInstruction })`.
+2. Gateway selects an eligible credential and calls the Gemini ephemeral token API.
+3. An ephemeral token and WebSocket URL are returned to the client.
+4. The client connects to the Live API WebSocket using the ephemeral token.
+5. The permanent API key is **never sent to the browser**.
+
+Ephemeral tokens are not persisted in D1 or logs.
+
+### Admin dashboard
+
+The super-admin dashboard is at `/admin/ai` in the web app (`apps/web/app/admin/ai/page.tsx`). It provides:
+
+- Credential overview stats (total, active, disabled, invalid, cooldown)
+- Request success rate display
+- Add credential form (name + API key only — no Google project fields)
+- Credential table with enable/disable/rename/delete/test actions
+- Confirmation prompt before deletion
+- Recent activity table (model, modality, status, latency, retries)
+
+### Environment variables required
+
+| Secret | Purpose | How to set |
+|---|---|---|
+| `AI_CREDENTIAL_ENCRYPTION_KEY` | Master encryption key (base64, 32 bytes) | `wrangler secret put AI_CREDENTIAL_ENCRYPTION_KEY` |
+| `SUPER_ADMIN_EMAILS` | Comma-separated super-admin email addresses | `wrangler secret put SUPER_ADMIN_EMAILS` |
+
+### Running tests
+
+```bash
+cd apps/api
+pnpm test
+```
+
+45 tests cover: encryption (12), error classification (15), credential manager and router logic (11), Gemini adapter multimodal and Live token provisioning (7).
+
+### Known limitations and future work
+
+- The gateway lives inside `apps/api` rather than the planned `packages/ai`. It can be extracted later when other apps need it.
+- Super-admin identity is determined by email list (SUPER_ADMIN_EMAILS secret) rather than a database role, since the Better Auth roles plugin is not yet configured.
+- The `testCredential` endpoint makes a real Gemini API call that counts against quota. Document this to users.
+- Streaming failover is not transparent — if a stream starts and the connection fails mid-stream, the client must handle the interruption.
+- OpenAI and Anthropic provider adapters are not implemented. The architecture supports adding them via the provider adapter pattern in `gemini-adapter.ts`.
+- Usage cost estimation is not implemented — token counts are recorded but no price calculation is applied, as prices change frequently.
+
+## 19. Relationship to Other Documents
 
 - `PRODUCT.md` defines the AI-powered learning experiences Examinr must provide.
 - `ARCHITECTURE.md` defines where the gateway fits into the wider application.

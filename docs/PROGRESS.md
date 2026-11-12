@@ -47,15 +47,19 @@ Update this document as milestones are completed. Detailed implementation tasks 
 
 ## 5. AI Features
 
-- [ ] Internal AI gateway
-- [ ] Provider and credential management
-- [ ] Model registry and routing
-- [ ] AI tutoring and explanations
-- [ ] AI question generation
-- [ ] AI-assisted answer evaluation
-- [ ] AI performance analysis
-- [ ] AI usage and cost monitoring
-- [ ] Administrative AI dashboard
+- [x] Internal AI gateway — implemented in `apps/api/src/lib/ai/gateway/`; `createAiGateway` factory, `generate`, `stream`, `provisionLiveSession` interfaces operational
+- [x] Provider and credential management — `CredentialManager` with add/list/enable/disable/rename/delete; AES-256-GCM encryption via Web Crypto API; credentials stored encrypted in D1; raw keys never returned
+- [x] Model registry and routing — `ModelRegistry` with 5 Gemini models; `CredentialRouter` with LRU selection, retry context, shared-quota circuit-breaker (2 consecutive quota failures → AllCredentialsUnavailableError)
+- [x] Administrative AI dashboard — super-admin dashboard at `/admin/ai` with credential table, add form, enable/disable/rename/delete/test actions, stats overview, recent activity table
+- [x] Super-admin credential management API — `/api/admin/ai/credentials/*` endpoints; server-side auth via SUPER_ADMIN_EMAILS secret; 401/403 on unauthorised access
+- [x] Gemini provider adapter — text generation, multimodal (image+text), streaming, audio-capable models, Live API ephemeral token provisioning; permanent API keys never sent to browser
+- [x] Failure handling, retries, and cooldowns — error classification for 10+ Gemini error types; per-credential cooldowns; invalid credential auto-disable; bounded retries (max 3 attempts)
+- [x] Usage tracking and monitoring — `UsageManager` records `ai_usage_events` and `ai_route_events` to D1; stats endpoint returns totals and recent events
+- [x] Automated tests — 45 tests passing: encryption (12), error classification (15), credential manager and router (11), Gemini adapter multimodal/Live (7)
+- [ ] AI tutoring and explanations — gateway interface ready; product feature not yet implemented
+- [ ] AI question generation — gateway interface ready; product feature not yet implemented
+- [ ] AI-assisted answer evaluation — gateway interface ready; product feature not yet implemented
+- [ ] AI performance analysis — gateway interface ready; product feature not yet implemented
 
 ## 6. Supporting Features
 

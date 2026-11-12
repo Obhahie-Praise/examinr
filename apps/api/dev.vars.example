@@ -18,7 +18,7 @@ BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:8787
 
 # ---------------------------------------------------------------------------
-# Google Gemini
+# Google Gemini (single key for legacy/non-gateway use)
 # Obtain from: https://aistudio.google.com/app/apikey
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY=
@@ -28,6 +28,41 @@ GEMINI_API_KEY=
 # Obtain from: https://uploadthing.com/dashboard
 # ---------------------------------------------------------------------------
 UPLOADTHING_TOKEN=
+
+# ---------------------------------------------------------------------------
+# AI Gateway
+#
+# AI_CREDENTIAL_ENCRYPTION_KEY
+#   Master key for AES-256-GCM encryption of stored provider credentials.
+#   Must be a base64-encoded 32-byte (256-bit) random value.
+#
+#   Generate on Linux/macOS:
+#     openssl rand -base64 32
+#
+#   Generate on Windows (PowerShell):
+#     $bytes = New-Object Byte[] 32
+#     [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+#     [Convert]::ToBase64String($bytes)
+#
+#   Configure as a Worker secret for production:
+#     wrangler secret put AI_CREDENTIAL_ENCRYPTION_KEY
+#
+#   NEVER commit this value. NEVER put it in wrangler.jsonc.
+#   A database dump without this key reveals no plaintext credentials.
+# ---------------------------------------------------------------------------
+AI_CREDENTIAL_ENCRYPTION_KEY=
+
+# ---------------------------------------------------------------------------
+# SUPER_ADMIN_EMAILS
+#   Comma-separated list of email addresses with super-admin access.
+#   These users can manage AI credentials through the admin dashboard.
+#
+#   Example: admin@examinr.app,backup-admin@examinr.app
+#
+#   Configure as a Worker secret for production:
+#     wrangler secret put SUPER_ADMIN_EMAILS
+# ---------------------------------------------------------------------------
+SUPER_ADMIN_EMAILS=
 
 # ---------------------------------------------------------------------------
 # Cloudflare (used by drizzle-kit for remote D1 migrations only)
