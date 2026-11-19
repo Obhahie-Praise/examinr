@@ -1,15 +1,21 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import NextTopLoader from "nextjs-toploader";
+import Link from "next/link";
+import { Google_Sans, Google_Sans_Code } from "next/font/google";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-});
+const googleSans = Google_Sans({
+  variable: "--font-google-sans",
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+})
+
+const googleSansCode = Google_Sans_Code({
+  variable: "--font-google-sans-code",
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -23,7 +29,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${googleSans.variable} ${googleSansCode.variable}`}>
+      <NextTopLoader
+          color="#3b82f6"
+          height={1.5}
+          showSpinner={false}
+          shadow="0 0 10px #3b82f6,0 0 5px #3b82f6"
+        />
         {children}
       </body>
     </html>
