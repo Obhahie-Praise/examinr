@@ -1,73 +1,125 @@
+
 "use client";
 
 import {
   type ComponentProps,
   type CSSProperties,
+  type ReactNode,
   useEffect,
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
 
+type TextSlide = {
+  type: "text";
+  content: string;
+};
+
+type RichSlide = {
+  type: "rich";
+  content: ReactNode;
+  /** Plain-text equivalent for screen readers and layout measurement. */
+  accessibleText: string;
+};
+
+export type FlipSlide = TextSlide | RichSlide;
+
 export interface FlipWordsProps
   extends Omit<ComponentProps<"span">, "children"> {
-  /** How long each word stays, in milliseconds. @default 3000 */
+  /** How long each slide stays, in milliseconds. @default 3000 */
   duration?: number;
-  /** The time between one letter coming in and the next, in milliseconds. @default 40 */
+
+  /** Time between incoming letters, in milliseconds. @default 40 */
   stagger?: number;
-  /** The words, shown in turn from the first; a word may be a few words. */
-  words: string[];
+
+  /** Legacy text-only slides. Use slides for rich content. */
+  words?: string[];
+
+  /** Slides can contain plain text or arbitrary React content. */
+  slides?: FlipSlide[];
 }
 
 const segmenter =
+  typeof Intl !== "undefined" &&
   typeof Intl.Segmenter === "function"
     ? new Intl.Segmenter(undefined, { granularity: "grapheme" })
     : undefined;
 
-/** A list's items with their place: keys and delays from data. */
-const numbered = (list: string[]) =>
+const numbered = <T,>(list: T[]) =>
   list.map((value, index) => ({ index, value }));
 
-/** A word's letters, whole (emoji and accents stay one letter), numbered. */
 const lettersOf = (word: string) =>
   numbered(
     segmenter
       ? Array.from(segmenter.segment(word), (part) => part.segment)
-      : Array.from(word)
+      : Array.from(word),
   );
 
-/** The word a tick shows, and the one it replaces (none at first). */
-const turnOf = (words: string[], tick: number) => ({
-  current: words[tick % words.length] ?? "",
-  previous: tick > 0 ? (words[(tick - 1) % words.length] ?? "") : "",
-});
-
-/**
- * Words that flip in place, one after another: the outgoing word lifts away
- * and blurs while the next one rises in letter by letter. A timer counts the
- * turns and flips `data-turn` between `a` and `b`, which restarts the
- * `flip-words-in` and `flip-words-out` keyframes; every word sits in the
- * same grid cell, invisible, so the widest one holds the width and nothing
- * around it moves. It pauses while the pointer is over it.
- *
- * @cssvar --flip-words-stagger The time between one letter coming in and the next (`40ms`).
- * @cssvar --flip-words-x How far the outgoing word drifts sideways (`0.4em`, mirrored for right-to-left text).
- */
 export const FlipWords = (props: FlipWordsProps) => {
-  const { duration = 3000, stagger, words, className, ...rest } = props;
+  const {
+    duration = 3000,
+    stagger,
+    words,
+    slides,
+    className,
+    ...rest
+  } = props;
+
+  // Convert legacy words into the new slide format.
+  const items: FlipSlide[] =
+    slides ??
+    (words ?? []).map((content) => ({
+      type: "text" as const,
+      content,
+    }));
+
   const [tick, setTick] = useState(0);
   const [paused, setPaused] = useState(false);
-  const turn = turnOf(words, tick);
+
+  const safeTick = items.length > 0 ? tick % items.length : 0;
+  const current = items[safeTick];
+
+  const previous =
+    tick > 0 && items.length > 0
+      ? items[(tick - 1) % items.length]
+      : undefined;
 
   useEffect(() => {
-    if (paused || words.length < 2) {
-      return;
-    }
-    const timer = window.setTimeout(() => setTick(tick + 1), duration);
+    if (paused || items.length < 2) return;
+
+    const timer = window.setTimeout(
+      () => setTick((current) => current + 1),
+      duration,
+    );
+
     return () => window.clearTimeout(timer);
-  }, [duration, paused, tick, words.length]);
+  }, [duration, paused, tick, items.length]);
 
   const hold = () => setPaused(true);
   const release = () => setPaused(false);
+
+  const getAccessibleText = (slide: FlipSlide) =>
+    slide.type === "text" ? slide.content : slide.accessibleText;
+
+  const renderContent = (slide: FlipSlide) => {
+    if (slide.type === "rich") return slide.content;
+
+    return lettersOf(slide.content).map((letter) => (
+      <span
+        key={letter.index}
+        className="inline-block motion-safe:group-data-[turn=a]/flip-words:animate-flip-words-in motion-safe:group-data-[turn=b]/flip-words:animate-flip-words-in-again"
+        style={
+          {
+            "--flip-words-index": letter.index,
+          } as CSSProperties
+        }
+      >
+        {letter.value}
+      </span>
+    ));
+  };
+
+  if (!current) return null;
 
   return (
     <span
@@ -76,7 +128,10 @@ export const FlipWords = (props: FlipWordsProps) => {
       data-turn={tick % 2 === 0 ? "a" : "b"}
       {...rest}
     >
-      <span className="sr-only">{words.join(", ")}</span>
+      <span className="sr-only">
+        {items.map(getAccessibleText).join(", ")}
+      </span>
+
       <span
         aria-hidden="true"
         className="inline-grid whitespace-pre [&:dir(rtl)]:[--flip-words-x:-0.4em]"
@@ -90,26 +145,47 @@ export const FlipWords = (props: FlipWordsProps) => {
           } as CSSProperties
         }
       >
-        {/* Every word, unseen in one cell: the widest sets the width. */}
-        {numbered(words).map((word) => (
-          <span className="invisible [grid-area:1/1]" key={word.index}>
-            {word.value}
+        {/* Invisible slides preserve the width of the widest sentence. */}
+        {items.map((slide, index) => (
+          <span
+            key={index}
+            className="invisible [grid-area:1/1]"
+          >
+            {slide.type === "text"
+              ? slide.content
+              : slide.accessibleText}
           </span>
         ))}
-        <span className="[grid-area:1/1]" data-slot="flip-words-word">
-          {lettersOf(turn.current).map((letter) => (
-            <span
-              className="inline-block motion-safe:group-data-[turn=a]/flip-words:animate-flip-words-in motion-safe:group-data-[turn=b]/flip-words:animate-flip-words-in-again"
-              key={letter.index}
-              style={{ "--flip-words-index": letter.index } as CSSProperties}
-            >
-              {letter.value}
-            </span>
-          ))}
+
+        {/* Current slide */}
+        <span
+          className={cn(
+            "[grid-area:1/1]",
+            current.type === "rich" &&
+              "motion-safe:animate-flip-words-rich-in",
+          )}
+          data-slot="flip-words-word"
+          key={tick}
+        >
+          {renderContent(current)}
         </span>
-        <span className="pointer-events-none opacity-0 [grid-area:1/1] motion-safe:group-data-[turn=a]/flip-words:animate-flip-words-out motion-safe:group-data-[turn=b]/flip-words:animate-flip-words-out-again">
-          {turn.previous}
-        </span>
+
+        {/* Previous slide */}
+        {previous && (
+          <span
+            className={cn(
+              "pointer-events-none opacity-0 [grid-area:1/1]",
+              previous.type === "text" &&
+                "motion-safe:group-data-[turn=a]/flip-words:animate-flip-words-out motion-safe:group-data-[turn=b]/flip-words:animate-flip-words-out-again",
+              previous.type === "rich" &&
+                "motion-safe:animate-flip-words-rich-out",
+            )}
+          >
+            {previous.type === "text"
+              ? previous.content
+              : previous.content}
+          </span>
+        )}
       </span>
     </span>
   );

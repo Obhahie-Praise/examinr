@@ -1,146 +1,196 @@
 # Examinr AI
+Examinr AI was created as my way of helping students prep for and succeed in their external examinations. I also made it to give students a completely zero-cost platform where they can access and grind on past questions, syllabus notes, educational games, online challenges and other learning materials.
 
-> Examinr AI is my contribution towards helping students prepare for and succeed in external examinations. I created the project with the intention of making it a completely zero-cost platform where students can access and absorb past questions, syllabus notes, educational games, online challenges and other learning materials.
->
-> Examinr also aims to give schools a better way to get involved in the examination preparation of their students. Schools using Examinr should be able to analyse their students' level of preparedness, provide learning materials and organise mock examinations to help students prepare more effectively.
->
-> My business model for Examinr is built around a simple principle: **students should not have to pay to access quality educational resources.** Instead, the platform is designed to generate revenue from schools that can conveniently afford educational software. This way, schools help sustain the platform while students get to use Examinr entirely for free.
+Examinr will also give schools a better way to get involved in the preparation of their students. Schools using Examinr will be able to analyse their students level of preparedness, provide learning materials and organise mock examinations to help students prepare better.
+
+The business model for examinr was born from a single idea which was 'students should not have to pay to access quality educational resources'. So I designed the platform to generate revenue from schools that can easily afford educational software. This way, schools help keep the platform alive while students get to use examinr completely for free.
 
 ## Overview
 
-Examinr is a platform designed to help Nigerian secondary school students prepare for external examinations, completely free of charge.
+I made examinr to help Nigerian secondary school students prepare for external examinations, completely for free.
 
-The platform is primarily intended for students in examination classes, particularly JSS 3 and SS 3, who are preparing for examinations such as WAEC, NECO and JAMB.
+Its is mainly for students in examination classes, JSS 3 and SS 3, who are preparing for examinations like WAEC, NECO, BECE and JAMB.
 
-One of the problems I want Examinr to address is the financial barrier to accessing quality examination preparation materials. There are already several good educational platforms available, but some require subscriptions or recurring payments that not every student can conveniently afford.
+One of the problems I want examinr to solve is the cost to getting your hands on good examination prep materials. I acknowledge that there are already several good educational platforms available, but you have to pay for them and its not smth every student can conveniently afford.
 
-I personally experienced financial setbacks that made it difficult to ask my parents to purchase additional learning materials because I was uncertain about the response I might receive. That experience made me think about other students who might be facing similar circumstances.
+I too have experienced money issues that made it impossible to ask my parents to buy extra learning materials because I didn't know how they would react. That made me think about other students who might be facing similar problems.
 
-From that experience, the idea for Examinr was born: a platform that gives students access to the resources they need to prepare, regardless of their financial circumstances. Not just students who cannot afford paid alternatives, but even those who simply want a better way to learn.
+From that experience, the idea for examinr was born: a platform that gives students access to the resources that they need to prepare, regardless of their financial situation. Not just students who cannot afford paid alternatives, but even those who just want a better way to learn.
 
-Ultimately, I want Examinr to make quality examination preparation more accessible to everyone.
+Ultimately, I want examinr to make good, sensible examination preparation better accessible to everyone.
 
 ## My approach
 
-Examinr is built around making existing educational resources easier to access, understand and use.
+Examinr is meant to make existing educational resources easier to access, understand and use.
 
-The platform intends to make use of publicly available past-question resources and APIs provided by examination-related organisations, where their availability and licensing permit, and present them through a seamless interface that makes practising questions and tracking progress easier.
+The platform will use publicly available past question resources and APIs provided by examination bodies, bringing them together in one place. I hope this makes it easy for students to practice past questions, find learning materials like notes and keep track of their progress.
 
-Rather than simply providing students with a collection of questions, I want Examinr to become a more complete learning environment. Students should be able to practise, identify their weaknesses, understand difficult concepts, challenge themselves and monitor their improvement over time.
+But I don't want Examinr to be another platform where students go to answer past questions. I want it to become a more complete learning site where students can practice, know their weaknesses, understand hard concepts like calc, challenge themselves and others and see how they are getting better over time.
 
-To be completely upfront, there are already several good examination preparation platforms available. However, one of the things that makes some of them inaccessible to me and other students is their pricing. The cost of accessing educational software can become a recurring burden, especially when students have several other educational expenses.
+To be completely honest, I know there are already many good examination prep platforms out there. But smth that makes them 'not the right fit' is the cost. Paying for software can become another expense, especially when students already have other things to spend money on.
 
-What makes Examinr different is its approach to accessibility and sustainability. I want students to have the freedom to learn without worrying about subscriptions, while schools that can afford the software help support the platform financially.
+What makes Examinr different is how I am going to approach accessibility and sustainability. I want students to be able to learn without worrying about costs.
 
-I also intend to integrate AI into the learning experience, making it possible for students to receive explanations, understand challenging concepts and get additional learning assistance when they need it.
+I also plan integrate AI into the learning. Instead of just leaving students to figure everything out on their own, I want them to be able to ask questions, get good and understandble explanations when they are stuck and receive actual help understanding topics they find difficult.
 
 ## Planned features
 
-### Student Learning
+### Student learning
 
-- **Past Questions:** Access to examination past questions, organised by subject, topic, examination body and year.
-- **AI-Assisted Learning:** An AI learning assistant that helps students understand difficult concepts, explain answers and explore topics beyond simply memorising them.
-- **Syllabus Notes:** Accessible learning materials organised around relevant examination syllabuses.
-- **Educational Games:** Fun, bite-sized learning experiences that make studying more engaging.
-- **Online Challenges:** Subject-based challenges that encourage students to test their knowledge.
-- **Learning Roadmaps:** Structured learning paths that help students understand what to study and what to prioritise.
-- **Progress Tracking:** Tools that help students monitor their performance, identify weaknesses and understand their improvement over time.
-- **Leaderboards:** Friendly competition that gives students additional motivation to practise and improve.
+- **Past questions:** Students will be able to access past questions from different examination bodies, subjects, topics and years.
+- **AI assisted learning:** An AI assistant that students can interact with when they need help. They can ask questions, get explanations for answers and get help understanding topics they find difficult.
+- **Notes:** Notes and other learning materials based on the relevant examination syllabuses. This should make it easier to know what to read and what topics to cover.
+- **Games:** I want to include games that make learning more fun.
+- **Challenges:** Challenges across different subjects where students can test what they know and compete with other students.
+- **Roadmaps:** I want to provide roadmaps that show students what to study and the topics they should pay attention to.
+- **Progress tracking:** Students should be able to see how they are doing, the questions they've answered, topics they need to work on and how much they've improved.
+- **Leader boards:** So students can how they rank against others.
 
-### School Management
+### School management
 
-- **Student Performance Analytics:** Allow schools to understand how prepared their students are, identify weak subjects and monitor academic progress.
-- **Mock Examinations:** Enable schools to create and organise mock examinations for their students.
-- **Learning Resource Sharing:** Allow schools and teachers to provide students with relevant educational materials.
-- **Student Management:** Give schools a centralised way to manage participating students and their learning activities.
+- **Student analytics:** Schools should be able to see how prepared their students are for their examinations.
+- **Mock examinations:** Schools will be able to organise mock examinations for their students directly on Examinr and use the results to see how well they are doing.
+- **Resource sharing:** Teachers and schools can upload learning materials and make them available to their students.
+- **Student management:** Schools will have a way to manage the students using Examinr and track their activity on the platform.
 
-### AI Infrastructure
+### AI infrastructure
 
-- **AI Model Integration:** Use Google's Gemini models to power the AI-assisted learning experience.
-- **AI Request Router:** A routing system intended to distribute AI requests across available Gemini API keys and projects, making better use of available quotas and reducing the likelihood of interruptions when individual quotas are exhausted.
+- **AI model integration:** I'm using Google's Gemini models for the AI features on Examinr. This will allow students to ask questions, get explanations and receive help with topics they don't understand.
+- **AI request router:** One problem with using free AI API quotas is that you can easily run out of requests. I plan to build a router that distributes requests across my different Gemini API keys and projects. This should help me get the most out of the available quota and stop interruptions when they of them runs out.
 
-## How It Works
+## How it Works
 
-Examinr is structured as a monorepo that contains a student-facing web application and a separate API service.
+Examinr was created as a monorepo that contains a student-facing web application and a separate cloudflare worker (hono) for the API service.
 
-The web application is responsible for the user experience, while the API handles the backend operations, data access and communication with external services.
+The web application is for the user experience, while the API is for backend operations, and communication with external services.
 
-I made the decision to separate the API from the frontend rather than putting all backend functionality inside the web application. This gives me more control over backend infrastructure and allows me to take advantage of Cloudflare's platform capabilities (espiecially realtime and schedule events).
+I decide to separate the API from the frontend instead of putting all backend stuff inside the web application. This gives me more control over the backend and allows me to take advantage of Cloudflare's platform capabilities (espiecially realtime and schedule events).
 
-The API is built with Hono and deployed as a cloudflare worker. Cloudflare durable objects provide a way to implement stateful and real-time functionality, while scheduled events and cron triggers allow background operations to run without requiring a continuously running server.
+The API is built with Hono and deployed as a cloudflare worker. Cloudflare durable objects gives me a way to implement stateful and realtime functionality, while scheduled events and cron triggers allow background jobs
 
 The architecture is intended to support features such as mock examinations, school operations, AI requests, scheduled tasks and other services that may be introduced as the platform grows.
 
-### The AI Router
+### The AI router
 
-AI is an important part of the Examinr learning experience, but relying on a single API key introduces a potential limitation: API quotas.
+AI is an big part of the examinrs learning experience, but relying on one API key will create an envitable problem: API quotas.
 
-To address this, I intend to implement an AI request router that can distribute requests across multiple available Gemini API keys and projects.
+To address this, I have a plan to implement an AI router that can split requests across my different available Gemini API keys and projects.
 
-The idea is to make better use of available quotas, handle quota-related failures and provide a more reliable AI experience for students.
+The idea is to maximize quotas, handle quota related errors/failures and provide a more reliable AI experience for students.
 
-This is not intended to bypass provider restrictions or usage limits. Each API key and project must operate within the applicable provider terms and quotas.
+### Educational resources and external API(s)
 
-### Educational Resources and External APIs
+Examinr will make publicly available educational resources and APIs where possible.
 
-Examinr intends to integrate publicly available educational resources and APIs where possible.
+I am just starting out, so dont to see here just yet actually.
 
-The goal is to reduce the cost and complexity of making examination materials available to students while ensuring that the resources used are properly attributed and their licensing conditions are respected.
-
-Some of the APIs and resources considered for the platform are open-source or available under licences that permit commercial use.
-
-## Technology Stack
+## Technology stack
 
 The project uses the following technologies:
 
 | Technology | Purpose |
 |---|---|
-| Next.js | Frontend framework for the student and school-facing web application. |
-| TypeScript | Application logic and type safety across the project. |
-| Hono | Lightweight API framework used for the backend service. |
-| Cloudflare Workers | Serverless runtime and deployment platform for the API. |
-| Cloudflare D1 | Relational database for application data. |
-| Cloudflare Durable Objects | Stateful backend functionality and real-time features. |
-| Cloudflare Cron Triggers | Scheduled and recurring backend operations. |
-| UploadThing | File and object storage for uploaded resources. |
-| Google Gemini | AI capabilities for learning assistance and explanations. |
+| Next.js | Used to build the web application for students and schools. |
+| TypeScript | Used throughout the project to write the application logic and catch type-related errors. |
+| Hono | Handles the backend API and communication between the frontend and backend. |
+| Cloudflare Workers | Runs and hosts the backend API. |
+| Cloudflare D1 | Stores application data in a relational database. |
+| Cloudflare Durable Objects | Handles features that need to maintain state or support real-time communication. |
+| Cloudflare Cron Triggers | Runs scheduled tasks and other recurring backend operations. |
+| UploadThing | Handles file uploads and storage for learning resources and other uploaded files. |
+| Google Gemini | Powers the AI features, including learning assistance and explanations. |
 
-## Project Philosophy
+## How to run examinr locally
 
-There are a few principles I want Examinr to remain committed to as it develops.
+Ofcourse you are going to need [Node.js](https://nodejs.org/), [pnpm](https://pnpm.io/) and Git installed on your device.
 
-**1. Education should be accessible.**
+### Clone the repository
 
-A student's financial circumstances should not determine whether they can access useful examination preparation resources.
+```sh
+git clone https://github.com/Obhahie-Praise/examinr
+cd examinr
+```
 
-**2. Free does not mean low quality.**
+### Install the dependencies
 
-Making Examinr free for students should not mean compromising the quality of its learning experience. I want the platform to be genuinely useful, reliable and easy to use.
+Examinr uses pnpm, so install the packages from the project root.
 
-**3. Schools should be part of the solution.**
+```sh
+pnpm install
+```
 
-Schools are in a position to make a significant difference in how students prepare for examinations. Examinr should give them the tools to participate more actively in that process.
+### Set up your environment variables
 
-**4. Technology should solve actual problems.**
+There are two environments; web and api. So you'll need to config for both
 
-Every feature should have a reason to exist. I don't want Examinr to become a collection of impressive technologies that do little to improve the student's learning experience.
+**For the API (`apps/api/.env`):**
 
-**5. Sustainability matters.**
+```env
+APP_ENV=development
 
-A platform that intends to provide free access to students must have a way to sustain its operations. The school-focused business model is my approach to making that possible.
+BETTER_AUTH_SECRET=your_secret_here
+BETTER_AUTH_URL=http://localhost:8787
 
-## What I Hope to Achieve
+GOOGLE_CLIENT_ID=google_client_id
+GOOGLE_CLIENT_SECRET=google_client_secret
 
-I want Examinr to become more than another examination preparation website.
+APP_URL=http://localhost:3000
 
-My goal is to create an educational platform that students can depend on throughout their preparation, one that helps them practise, understand, improve and approach their examinations with greater confidence.
+UPLOADTHING_TOKEN=your_uploadthing_token
+GEMINI_API_KEY=your_gemini_api_key
+```
 
-I also hope to give schools better insight into their students' academic preparedness and provide them with practical tools to improve examination outcomes.
+**For the web (`apps/web/.env`):**
 
-Most importantly, I want to build something that makes a genuine difference to students who might otherwise have limited access to these resources.
+```env
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:8787
+```
 
-**Quality education should not be a privilege reserved for those who can afford it.**
+You're gonna need your own API keys for uploadthing and gemini.
 
----
+You can get them here:
 
-*Examinr AI — Making examination preparation accessible to everyone.*
+- [Google AI Studio](https://aistudio.google.com/apikey)
+- [UploadThing](https://uploadthing.com/)
+
+For the `BETTER_AUTH_SECRET`, just generate a secure random secret for the terminal
+
+```sh
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+```
+
+### Run the servers
+
+You'll need to run the frontend and API separately.
+
+**Run the API:**
+
+```sh
+pnpm --filter ./apps/api dev
+```
+
+The API can be seen on `http://localhost:8787`.
+
+**Run the web:**
+
+```sh
+pnpm --filter ./apps/web dev
+```
+**Or just run the start the servers from the root:**
+```sh
+pnpm dev
+```
+
+
+The web application should be available at `http://localhost:3000`.
+
+And just about it. You should now have Examinr running locally
+
+### Building the project
+
+To build the applications, run the following from the project root:
+
+```sh
+pnpm build
+```
